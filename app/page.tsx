@@ -53,7 +53,7 @@ const MyApp = () => {
 
   useEffect(() => {
     const initAuthProcess = async () => {
-      var authToken
+      let authToken
       try {
         authToken = await getToken();
         await makeFunctionCall("/", authToken);
@@ -73,7 +73,7 @@ const MyApp = () => {
       setLoading(false);
     };
     initAuthProcess();
-  }, []);
+  }, [token]);
 
   const handleButtonClick = async () => {
     if (!token) {
@@ -86,14 +86,14 @@ const MyApp = () => {
   };
 
 
-  var loadingElement
+  let loadingElement
   if (loading) {
     return (
       loadingElement = <Spinner label="Authorizing..." />
     );
   }
 
-  var errorElement
+  let errorElement
   if (error) {
     return (
       errorElement = <div>{error}</div>
