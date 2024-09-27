@@ -12,6 +12,10 @@ const MyApp = () => {
 
 
   const fetchToken = async (): Promise<string> => {
+      const cloudFunctionToken = process.env.NEXT_PUBLIC_CLOUD_FUNCTION_TOKEN
+      if (cloudFunctionToken) {
+        return cloudFunctionToken
+      }
       const response = await fetch(`${process.env.NEXT_PUBLIC_MANAGEMENT_API_ENDPOINT}/v1/codeservices/${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_ID}/token`,{
         method: 'GET',
         headers: {
@@ -80,6 +84,7 @@ const MyApp = () => {
       throw new Error("Invalid token")
     }
     setSubmitting(true)
+    setOutputValue(undefined)
     const response = await makeFunctionCall(`${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_PATH}`, token);
     setOutputValue(response);
     setSubmitting(false)
