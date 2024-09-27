@@ -121,7 +121,7 @@ const MyApp = () => {
   }
 
   return (
-    <Stack tokens={{ childrenGap: 15 }} styles={{ root: { maxWidth: 600, margin: '0 auto', padding: 20,  } }}>
+    <Stack tokens={{ childrenGap: 15 }} styles={{ root: { maxWidth: 1500, margin: '0 auto', padding: 20,  } }}>
       {loadingElement}
       {errorElement}
       {/* Input TextArea */}
@@ -135,7 +135,7 @@ const MyApp = () => {
         styles={{ fieldGroup: { width: '100%' } }}
       />
       
-      <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} styles={{ root: { alignSelf: 'center' } }}>
+      <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} styles={{ root: { alignSelf: 'flex-start' } }}>
         {submitting ? <Spinner/> : "Submit"}
       </PrimaryButton>
 
