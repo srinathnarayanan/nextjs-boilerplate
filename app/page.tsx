@@ -41,7 +41,7 @@ const MyApp = () => {
   };
 
   const makeFunctionCall = async (path: string, authToken: string, method: string, body: string | undefined) => {
-    let params : RequestInit = {
+    const params : RequestInit = {
       method: method,
       headers: {
         'Content-Type': 'application/json',
