@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { TextField, Stack, PrimaryButton, Spinner } from '@fluentui/react';
+import ReactMarkdown from 'react-markdown';
 
 const MyApp = () => {
   const [token, setToken] = useState<string|undefined>(undefined);
@@ -93,7 +94,14 @@ const MyApp = () => {
     setSubmitting(true)
     setOutputValue(undefined)
     const response = await makeFunctionCall(`${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_PATH}`, token, 'POST', inputValue);
-    setOutputValue(response);
+    const trimmedText = response.replace(/^["']|["']$/g, '').trim();
+    const formattedText = trimmedText
+      .replace(/\\n\\n/g, '\n\n') // Replace double escaped line breaks with actual line breaks
+      .replace(/\\n/g, '\n')      // Replace single escaped line breaks with a space
+      .replace(/^\s*\-\s+/gm, '- ') // Ensure proper spacing for bullet points
+      .replace(/^(#+)\s+/gm, '$1 ') // Ensure there's a space after the hashtag in headings
+
+    setOutputValue(formattedText);
     setSubmitting(false)
   };
 
@@ -113,11 +121,41 @@ const MyApp = () => {
   }
 
   return (
+    <Stack tokens={{ childrenGap: 15 }} styles={{ root: { maxWidth: 600, margin: '0 auto', padding: 20,  } }}>
+      {/* Input TextArea */}
+      <TextField
+        label="What do you seek?"
+        disabled={submitting}
+        multiline
+        rows={4}
+        value={inputValue}
+        onChange={(e, newValue) => setInputValue(newValue)}
+        styles={{ fieldGroup: { width: '100%' } }}
+      />
+      
+      <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} styles={{ root: { alignSelf: 'center' } }}>
+        {submitting ? <Spinner/> : "Submit"}
+      </PrimaryButton>
+
+      {/* Conditionally render the output paragraph with title */}
+      {outputValue && (
+        <Stack tokens={{ childrenGap: 10 }}>
+          <h2 >
+            Response:
+          </h2>
+
+          <div style={{ backgroundColor: '#f4f4f4', padding: 10, borderRadius: 5 }}>
+            <ReactMarkdown>{outputValue}</ReactMarkdown>
+          </div>
+        </Stack>
+      )}
+    </Stack>
+    /*
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <Stack horizontal styles={{ root: { width: '80%', maxWidth: '800px', alignItems: 'flex-start' } }} tokens={{ childrenGap: 20 }}>
+      <Stack grow>
         <>{loadingElement}</>
         <>{errorElement}</>
-        <Stack.Item grow>
+        <Stack horizontal styles={{ root: { width: '80%', maxWidth: '800px', alignItems: 'flex-start' } }} tokens={{ childrenGap: 20 }}>
           <TextField
             label="Input Text"
             disabled={submitting}
@@ -129,17 +167,19 @@ const MyApp = () => {
           <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} style={{ marginTop: '10px' }} >
             {submitting ? <Spinner/> : "Submit"}
           </PrimaryButton>
-        </Stack.Item>
+        </Stack>
         <TextField
           label="Output Text"
           disabled={submitting}
           multiline
           rows={4}
-          value={outputValue}
           readOnly
-        />
+        >
+          <ReactMarkdown>{outputValue}</ReactMarkdown>
+          </TextField>
       </Stack>
     </div>
+    */
   );
 };
 
