@@ -40,14 +40,21 @@ const MyApp = () => {
       return await fetchToken();
   };
 
-  const makeFunctionCall = async (path: string, authToken: string) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_NOVA_GATEWAY_ENDPOINT}/functions/${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_ID}${path}`,{
-      method: 'GET',
+  const makeFunctionCall = async (path: string, authToken: string, method: string, body: string | undefined) => {
+    let params : RequestInit = {
+      method: method,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authToken}`,
       },
-    });
+    }
+    if (body) {
+      const requestBody = {
+        query: body,
+      };
+      params.body = JSON.stringify(requestBody)
+    }
+    const response = await fetch(`${process.env.NEXT_PUBLIC_NOVA_GATEWAY_ENDPOINT}/functions/${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_ID}${path}`, params);
     const responseString = await response.text()
     if (!response.ok) {
       throw new Error(`Invalid request. Error: ${responseString}`);
@@ -60,12 +67,12 @@ const MyApp = () => {
       let authToken
       try {
         authToken = await getToken();
-        await makeFunctionCall("/", authToken);
+        await makeFunctionCall("/", authToken, 'GET', undefined);
       } catch (err) {
         console.log(err)
         try {
           authToken = await fetchToken();
-          await makeFunctionCall("/", authToken);
+          await makeFunctionCall("/", authToken, 'GET', undefined);
         } catch (err) {
           console.log(err)
           setError(`Failed to execute request. Error: ${err}`)
@@ -85,7 +92,7 @@ const MyApp = () => {
     }
     setSubmitting(true)
     setOutputValue(undefined)
-    const response = await makeFunctionCall(`${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_PATH}`, token);
+    const response = await makeFunctionCall(`${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_PATH}`, token, 'POST', inputValue);
     setOutputValue(response);
     setSubmitting(false)
   };
@@ -113,17 +120,19 @@ const MyApp = () => {
         <Stack.Item grow>
           <TextField
             label="Input Text"
+            disabled={submitting}
             multiline
             rows={4}
             value={inputValue}
             onChange={(e, newValue) => setInputValue(newValue)}
           />
-          <PrimaryButton disabled={submitting} onClick={handleButtonClick} style={{ marginTop: '10px' }} >
+          <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} style={{ marginTop: '10px' }} >
             {submitting ? <Spinner/> : "Submit"}
           </PrimaryButton>
         </Stack.Item>
         <TextField
           label="Output Text"
+          disabled={submitting}
           multiline
           rows={4}
           value={outputValue}
