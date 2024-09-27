@@ -122,6 +122,8 @@ const MyApp = () => {
 
   return (
     <Stack tokens={{ childrenGap: 15 }} styles={{ root: { maxWidth: 600, margin: '0 auto', padding: 20,  } }}>
+      {loadingElement}
+      {errorElement}
       {/* Input TextArea */}
       <TextField
         label="What do you seek?"
@@ -150,36 +152,6 @@ const MyApp = () => {
         </Stack>
       )}
     </Stack>
-    /*
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <Stack grow>
-        <>{loadingElement}</>
-        <>{errorElement}</>
-        <Stack horizontal styles={{ root: { width: '80%', maxWidth: '800px', alignItems: 'flex-start' } }} tokens={{ childrenGap: 20 }}>
-          <TextField
-            label="Input Text"
-            disabled={submitting}
-            multiline
-            rows={4}
-            value={inputValue}
-            onChange={(e, newValue) => setInputValue(newValue)}
-          />
-          <PrimaryButton disabled={submitting || !inputValue} onClick={handleButtonClick} style={{ marginTop: '10px' }} >
-            {submitting ? <Spinner/> : "Submit"}
-          </PrimaryButton>
-        </Stack>
-        <TextField
-          label="Output Text"
-          disabled={submitting}
-          multiline
-          rows={4}
-          readOnly
-        >
-          <ReactMarkdown>{outputValue}</ReactMarkdown>
-          </TextField>
-      </Stack>
-    </div>
-    */
   );
 };
 
