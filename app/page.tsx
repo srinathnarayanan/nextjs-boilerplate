@@ -11,12 +11,12 @@ import {
   IStackTokens,
   TextField,
   PrimaryButton,
-  IconButton,
   Spinner,
   SpinnerSize,
   mergeStyleSets,
   Persona,
   PersonaSize,
+  IButtonStyles,
 } from '@fluentui/react'
 
 initializeIcons()
@@ -45,7 +45,7 @@ const classNames = mergeStyleSets({
   container: {
     height: '100vh',
     display: 'flex',
-    backgroundColor: theme.palette.neutralLighter,
+    backgroundColor: theme.palette.black,
   },
   sidebar: {
     width: '300px',
@@ -65,6 +65,7 @@ const classNames = mergeStyleSets({
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
+    color: theme.palette.white
   },
   messageContainer: {
     padding: '20px',
@@ -75,13 +76,11 @@ const classNames = mergeStyleSets({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: theme.palette.themeLighter,
     padding: '10px',
     borderRadius: '8px 8px 0 8px',
   },
   aiMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: theme.palette.neutralLighter,
     padding: '10px',
     borderRadius: '8px 8px 8px 0',
   },
@@ -92,14 +91,45 @@ const classNames = mergeStyleSets({
   headerText: {
     fontSize: theme.fonts.xLarge.fontSize,
     fontWeight: theme.fonts.xLarge.fontWeight,
-    color: theme.palette.neutralPrimary,
+    color: "#08fe6d",
     padding: '20px',
   },
+  customCoinClass: {
+    selectors: {
+      '& .ms-Persona-initials': {
+        backgroundColor: '#08fe6d', // Explicit coin background color
+        color: '#000000', // Explicit coin text color
+      },
+    }
+  },
+  leftBarButton: {
+        textAlign: 'left',
+        justifyContent: 'flex-start',
+        borderRadius: '5px'
+  }
 })
 
 const stackTokens: IStackTokens = {
   childrenGap: 10,
 }
+
+const customButtonStyles: IButtonStyles = {
+  root: {
+    borderColor: "#08fe6d",
+    color: theme.palette.white,
+    backgroundColor: theme.palette.black
+  },
+  rootHovered: {
+    borderColor: "#08fe6d",
+    backgroundColor: '#222222',
+  },
+  rootPressed: {
+    borderColor: "#08fe6d",
+    backgroundColor: '#4a4a4a',
+  },
+}
+
+
 
 export default function ChatApp() {
   const [token, setToken] = useState<string|undefined>(undefined);
@@ -275,13 +305,8 @@ useEffect(() => {
                     key={msg.id}
                     text={`${msg.question.substring(0, 30)} ...`}
                     onClick={() => handleQuestionClick(msg.id)}
-                    styles={{
-                      root: {
-                        textAlign: 'left',
-                        justifyContent: 'flex-start',
-                        borderRadius: '5px'
-                      },
-                    }}
+                    className={classNames.leftBarButton}
+                    styles={customButtonStyles}
                   />
                 ))}
               </Stack>
@@ -290,30 +315,37 @@ useEffect(() => {
         <div className={classNames.chatArea}>
           <Stack horizontal verticalAlign="center" styles={{ root: { padding: '10px 20px', borderBottom: `1px solid ${theme.palette.neutralLight}` } }}>
             <Persona
+              styles={{
+                primaryText: {
+                  color: theme.palette.white
+                },
+                secondaryText: {
+                  color: theme.palette.white
+                }
+              }}
+              className={classNames.customCoinClass}
               text="Book review bot"
               secondaryText="Get started with your reading journey!"
               size={PersonaSize.size40}
             />
-            <Stack.Item grow>
-              <span />
-            </Stack.Item>
-            <IconButton iconProps={{ iconName: 'MoreVertical' }} title="More options" ariaLabel="More options" />
           </Stack>
           <div ref={chatContainerRef} style={{ overflowY: 'auto', height: '100%', padding: '20px' }}>
             <Stack tokens={stackTokens}>
               {messages.map((msg) => (
                 <Stack key={msg.id} id={`message-${msg.id}`} tokens={stackTokens}>
-                  <Stack horizontal tokens={stackTokens}>
-                    <Persona
+                  <Stack horizontal tokens={stackTokens} horizontalAlign="end">
+                  <span className={`${classNames.message} ${classNames.userMessage}`}>{msg.question}</span>
+                  <Persona
                       size={PersonaSize.size32}
+                      className={classNames.customCoinClass}
                       styles={{ root: { alignSelf: 'flex-start' } }}
                     />
-                    <span className={`${classNames.message} ${classNames.userMessage}`}>{msg.question}</span>
                   </Stack>
                   {msg.answer && (
                     <Stack horizontal tokens={stackTokens}>
                       <Persona
-                        text="Book review bot"
+                        className={classNames.customCoinClass}
+                        imageInitials='BB'
                         size={PersonaSize.size32}
                         styles={{ root: { alignSelf: 'flex-start' } }}
                       />
@@ -332,13 +364,36 @@ useEffect(() => {
             <Stack horizontal tokens={stackTokens} className={classNames.inputContainer}>
               <Stack.Item grow>
                 <TextField
+                  styles={{
+                    field: {
+                      backgroundColor: '#000000',
+                      color: '#ffffff',
+                    },
+                    fieldGroup: {
+                      borderColor: "#08fe6d",
+                      transition: 'border-color 0.1s ease-in-out',
+                      selectors: {
+                        ':hover': {
+                          borderColor: '#06cb57', // Hover state: slightly darker green
+                        },
+                        ':focus-within': {
+                          borderColor: '#0aff8c', // Focus state: slightly lighter green
+                        },
+                        ':after': {
+                          borderColor: "#08fe6d",
+                        },
+                      },
+                    },
+                  }}
                   placeholder="Type your message..."
                   value={inputValue}
                   onChange={(_, newValue) => setInputValue(newValue || '')}
                   disabled={submitting}
                 />
               </Stack.Item>
-              <PrimaryButton type="submit" disabled={submitting} iconProps={{ iconName: 'Send' }}>
+              <PrimaryButton
+              styles={customButtonStyles}
+                type="submit" disabled={submitting} iconProps={{ iconName: 'Send' }}>
                 {submitting ? <Spinner size={SpinnerSize.small} /> : 'Send'}
               </PrimaryButton>
             </Stack>
