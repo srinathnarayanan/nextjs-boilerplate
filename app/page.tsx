@@ -17,6 +17,7 @@ import {
   Persona,
   PersonaSize,
   IButtonStyles,
+  Icon,
 } from '@fluentui/react'
 
 initializeIcons()
@@ -106,6 +107,12 @@ const classNames = mergeStyleSets({
         textAlign: 'left',
         justifyContent: 'flex-start',
         borderRadius: '5px'
+  },
+  spinner: {
+    borderTop : '8px solid blue',  /* Spinner color */
+  },
+  spinnerContainer: {
+    backgroundColor: "#08fe6d" /* Background color */
   }
 })
 
@@ -125,8 +132,12 @@ const customButtonStyles: IButtonStyles = {
   },
   rootPressed: {
     borderColor: "#08fe6d",
-    backgroundColor: '#4a4a4a',
+    backgroundColor: theme.palette.black,
   },
+  rootDisabled: {
+    borderColor: "#08fe6d",
+    backgroundColor: theme.palette.black,
+  }
 }
 
 
@@ -393,8 +404,11 @@ useEffect(() => {
               </Stack.Item>
               <PrimaryButton
               styles={customButtonStyles}
-                type="submit" disabled={submitting} iconProps={{ iconName: 'Send' }}>
-                {submitting ? <Spinner size={SpinnerSize.small} /> : 'Send'}
+                type="submit" disabled={submitting}>
+                {submitting ?
+                      <Spinner size={SpinnerSize.small}/> :
+                      <Icon iconName="Send"/>
+                    }
               </PrimaryButton>
             </Stack>
           </form>
