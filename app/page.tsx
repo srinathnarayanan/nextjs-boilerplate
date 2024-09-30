@@ -157,7 +157,7 @@ export default function ChatApp() {
     if (cloudFunctionToken) {
       return cloudFunctionToken
     }
-    const response = await fetch(`${process.env.NEXT_PUBLIC_MANAGEMENT_API_ENDPOINT}/v1/codeservices/${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_ID}/token`,{
+    const response = await fetch(`${process.env.NEXT_PUBLIC_MANAGEMENT_API_ENDPOINT}`,{
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -195,7 +195,7 @@ const makeFunctionCall = async (path: string, authToken: string, method: string,
     };
     params.body = JSON.stringify(requestBody)
   }
-  const response = await fetch(`${process.env.NEXT_PUBLIC_NOVA_GATEWAY_ENDPOINT}/functions/${process.env.NEXT_PUBLIC_CLOUD_FUNCTION_ID}${path}`, params);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_NOVA_GATEWAY_ENDPOINT}${path}`, params);
   const responseString = await response.text()
   if (!response.ok) {
     throw new Error(`Invalid request. Error: ${responseString}`);
